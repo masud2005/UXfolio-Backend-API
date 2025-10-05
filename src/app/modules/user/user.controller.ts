@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user.service";
-import httpStatus from 'http-status-codes';
 import { sendResponse } from "../../utils/sendResponse";
+import httpStatus from 'http-status-codes';
 import { catchAsync } from "../../utils/catchAsync";
 
 
@@ -26,7 +26,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextF
         success: true,
         statusCode: httpStatus.OK,
         message: "Single User Retrieved Successfully",
-        data: result
+        data: result.data
     })
 })
 

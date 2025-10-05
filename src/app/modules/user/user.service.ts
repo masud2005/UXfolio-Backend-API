@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt';
-import httpStatus from 'http-status-codes';
 import { envVars } from "../../config/env";
-import { IAuthProvider, IUser } from "./user.interface";
 import { UserModel } from "./user.model";
-import AppError from '../../errorHelpers/AppError';
+import httpStatus from 'http-status-codes';
+import bcrypt from 'bcrypt';
+import { IAuthProvider, IUser } from "./user.interface";
+import AppError from "../../errorHelpers/AppError";
 
 
 const getAllUsers = async () => {
@@ -21,11 +21,9 @@ const getAllUsers = async () => {
 const getSingleUser = async (userId: string) => {
     const user = await UserModel.findById(userId);
 
-    if (!user) {
-        throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+    return {
+        data: user
     }
-
-    return user;
 }
 
 const createUser = async (payload: Partial<IUser>) => {
@@ -85,9 +83,9 @@ const deleteUser = async (userId: string) => {
 
 
 export const UserServices = {
-    createUser,
-    getSingleUser,
     getAllUsers,
+    getSingleUser,
+    createUser,
     updateUser,
     deleteUser
 }
