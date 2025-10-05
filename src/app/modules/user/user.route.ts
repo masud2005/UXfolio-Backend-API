@@ -12,7 +12,7 @@ router.post('/register', validateRequest(createUserZodSchema), UserControllers.c
 router.get('/all-users', checkAuth(Role.ADMIN), UserControllers.getAllUsers);
 router.get('/:id', checkAuth(...Object.values(Role)), UserControllers.getSingleUser);
 router.patch('/:id', checkAuth(...Object.values(Role)), validateRequest(updateUserZodSchema), UserControllers.updateUser);
-router.delete('/:id', checkAuth(...Object.values(Role)), UserControllers.deleteUser);
+router.delete('/:id', checkAuth(Role.ADMIN), UserControllers.deleteUser);
 
 
 export const UserRoutes = router;
