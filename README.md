@@ -108,7 +108,7 @@ JWT_REFRESH_EXPIRES=jwt_refresh_expires_time
 ```
 
 ### Step 3: Run the Project
-# npm run build 
+    **npm run dev**
 
 ---
 
@@ -185,3 +185,4 @@ JWT_REFRESH_EXPIRES=jwt_refresh_expires_time
   "paymentStatus": "Pending" 
 }
 ```
+---
