@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import bcrypt from "bcrypt";
+import httpStatus from "http-status-codes";
+import { JwtPayload } from "jsonwebtoken";
+import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
+import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../utils/userTokens";
 import { IUser } from "../user/user.interface";
 import { UserModel } from "../user/user.model";
-import httpStatus from "http-status-codes";
-import bcrypt from "bcrypt";
-import { envVars } from "../../config/env";
-import jwt, { JwtPayload, SignOptions } from "jsonwebtoken";
 
 const credentialsLogin = async (payload: Partial<IUser>) => {
   const { email, password } = payload;
@@ -25,26 +26,39 @@ const credentialsLogin = async (payload: Partial<IUser>) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Incorrect Password");
   }
 
-  const jwtPayload = {
-    userId: isUserExist._id,
-    email: isUserExist.email,
-    role: isUserExist.role,
-  };
+  // const jwtPayload = {
+  //   userId: isUserExist._id,
+  //   email: isUserExist.email,
+  //   role: isUserExist.role,
+  // };
 
-  const token = jwt.sign(jwtPayload, envVars.JWT_ACCESS_SECRET, {
-    expiresIn: envVars.JWT_ACCESS_EXPIRES,
-  } as SignOptions);
+  // const token = jwt.sign(jwtPayload, envVars.JWT_ACCESS_SECRET, {
+  //   expiresIn: envVars.JWT_ACCESS_EXPIRES,
+  // } as SignOptions);
 
   //   console.log(token);
+
+  const generateTokens = createUserTokens(isUserExist);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: pass, ...rest } = isUserExist.toObject();
 
   return {
-    accessToken: token,
+    accessToken: generateTokens.accessToken,
+    refreshToken: generateTokens.refreshToken,
     user: rest,
   };
 };
+
+const getNewAccessToken = async (refreshToken: string) => {
+
+  const newAccessToken = await createNewAccessTokenWithRefreshToken(refreshToken)
+
+  return {
+    accessToken: newAccessToken
+  }
+
+}
 
 const resetPassword = async (
   oldPassword: string,
@@ -52,7 +66,7 @@ const resetPassword = async (
   decodedToken: JwtPayload
 ) => {
   const user = await UserModel.findById(decodedToken.userId);
-//   console.log(user);
+  //   console.log(user);
 
   const isOldPasswordMatch = await bcrypt.compare(
     oldPassword,
@@ -72,5 +86,6 @@ const resetPassword = async (
 
 export const AuthServices = {
   credentialsLogin,
-  resetPassword
+  getNewAccessToken,
+  resetPassword,
 };
